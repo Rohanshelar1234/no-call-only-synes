@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io("https://your-backend-url.onrender.com");
 let currentRoom = null;
 let localStream;
 let username = "User";

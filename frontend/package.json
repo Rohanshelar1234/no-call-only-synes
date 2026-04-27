@@ -1,0 +1,14 @@
+{
+  "name": "scenesync-frontend",
+  "version": "1.0.0",
+  "description": "SceneSync frontend - Real-time co-watching application",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build step required for static site'",
+    "start": "echo 'Static site - no start script needed'"
+  },
+  "keywords": ["real-time", "video", "chat", "co-watching"],
+  "author": "Rohan Shelar",
+  "license": "MIT",
+  "dependencies": {}
+}
