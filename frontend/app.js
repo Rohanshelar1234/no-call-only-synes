@@ -1,4 +1,4 @@
-const socket = io("https://your-backend-url.onrender.com");
+const socket = io("https://no-call-only-synes.onrender.com");
 let currentRoom = null;
 let localStream;
 let username = "User";
