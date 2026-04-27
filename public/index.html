@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SceneSync</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>SceneSync - No call, just sync</h2>
+
+<button onclick="createRoom()">Create Room</button>
+<input id="roomInput" placeholder="Enter Room ID">
+<button onclick="joinRoom()">Join Room</button>
+
+<p id="roomDisplay"></p>
+<p id="users">Users: 0</p>
+
+<input id="username" placeholder="Enter name">
+<button onclick="setName()">Set Name</button>
+
+<input id="urlInput" placeholder="Paste YouTube URL">
+<button onclick="setUrl()">Set Video</button>
+<button onclick="startScreenShare()">Start Screen Share</button>
+
+<br><br>
+
+<video id="video" width="600" height="350" controls autoplay></video>
+
+<br><br>
+
+<input id="msg" placeholder="Message">
+<button onclick="sendMsg()">Send</button>
+<button onclick="clearChat()">Clear Chat</button>
+
+<div id="chat"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
