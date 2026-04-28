@@ -43,8 +43,10 @@ function createRoom() {
   socket.emit("join-room", room);
 }
 
-// JOIN ROOM
-const joinRoom = () => {
+// ✅ IMPORTANT: normal function (NOT arrow)
+function joinRoom() {
+  console.log("Join clicked");
+
   const input = document.getElementById("roomInput").value;
 
   if (!input) {
@@ -55,7 +57,7 @@ const joinRoom = () => {
   const roomId = input.trim().toUpperCase();
 
   socket.emit("join-room", roomId);
-};
+}
 
 // COPY ROOM ID
 function copyRoom() {
