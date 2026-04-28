@@ -4,6 +4,19 @@ let room = ""
 // Connect to production backend
 const socket = io("https://no-call-only-synes.onrender.com")
 
+// YouTube URL conversion function
+function convertToEmbed(url) {
+  if (url.includes("watch?v=")) {
+    return url.replace("watch?v=", "embed/");
+  }
+
+  if (url.includes("youtu.be/")) {
+    return url.replace("youtu.be/", "youtube.com/embed/");
+  }
+
+  return url;
+}
+
 // Socket Events
 socket.on("connect", () => {
   console.log("✅ Connected to production server")
@@ -96,15 +109,8 @@ function setUrl() {
   
   let url = urlInputEl.value.trim()
   
-  // Convert YouTube URL to embed format
-  if (url.includes("watch?v=")) {
-    url = url.replace("watch?v=", "embed/")
-  } else if (url.includes("youtu.be/")) {
-    const videoId = url.split("youtu.be/")[1]?.split("?")[0]
-    if (videoId) {
-      url = `https://www.youtube.com/embed/${videoId}`
-    }
-  }
+  // Convert YouTube URL to embed format using the improved function
+  url = convertToEmbed(url)
   
   socket.emit("set-url", { room, url })
   
