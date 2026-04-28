@@ -1,44 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>SceneSync</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SceneSync - Premium Co-Watching</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 </head>
 
 <body>
+  <!-- Glassmorphism Navbar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="nav-brand">
+        <span class="logo">🎬</span>
+        <span class="brand-text">SceneSync</span>
+      </div>
+      <div class="nav-controls">
+        <div class="room-info">
+          <span class="room-label">Room:</span>
+          <span id="roomDisplay" class="room-id">None</span>
+          <button id="copyRoomBtn" class="btn-icon" onclick="copyRoomId()" title="Copy Room ID">
+            📋
+          </button>
+        </div>
+        <button class="btn-share" onclick="shareRoom()">
+          <span>🔗</span>
+          <span>Share</span>
+        </button>
+      </div>
+    </div>
+  </nav>
 
-<div class="container">
+  <!-- Main Container -->
+  <main class="main-container">
+    <div class="content-grid">
+      
+      <!-- Room Control Section -->
+      <section class="card room-card">
+        <div class="card-header">
+          <h2>🎯 Room Control</h2>
+        </div>
+        <div class="card-body">
+          <div class="room-actions">
+            <button class="btn-primary btn-large" onclick="createRoom()">
+              <span class="btn-icon">🏠</span>
+              <span>Create Room</span>
+            </button>
+            
+            <div class="join-room">
+              <input 
+                type="text" 
+                id="roomInput" 
+                placeholder="Enter Room ID" 
+                maxlength="10"
+                onkeypress="if(event.key==='Enter') joinRoom()"
+              >
+              <button class="btn-secondary" onclick="joinRoom()">
+                <span>Join</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="room-status">
+            <div class="status-item">
+              <span class="status-dot" id="connectionStatus"></span>
+              <span class="status-text" id="statusText">Disconnected</span>
+            </div>
+            <div class="status-item">
+              <span class="status-dot online"></span>
+              <span class="status-text" id="userCount">0 Users</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-  <h1>SceneSync</h1>
-  <p>No call, just sync.</p>
+      <!-- Video Section -->
+      <section class="card video-card">
+        <div class="card-header">
+          <h2>🎬 Video Player</h2>
+          <div class="video-controls">
+            <button class="btn-icon" onclick="toggleMute()" title="Mute/Unmute">
+              <span id="muteIcon">🔊</span>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="video-input-section">
+            <input 
+              type="text" 
+              id="urlInput" 
+              placeholder="Paste YouTube URL (e.g., https://youtube.com/watch?v=...)" 
+              onkeypress="if(event.key==='Enter') setVideoUrl()"
+            >
+            <button class="btn-primary" onclick="setVideoUrl()">
+              <span>▶️</span>
+              <span>Load Video</span>
+            </button>
+          </div>
+          
+          <div class="video-container">
+            <div id="videoPlaceholder" class="video-placeholder">
+              <div class="placeholder-content">
+                <div class="placeholder-icon">🎬</div>
+                <p>Set a video URL to start watching together</p>
+                <div class="loading-spinner hidden" id="videoLoader">
+                  <div class="spinner"></div>
+                  <p>Loading video...</p>
+                </div>
+              </div>
+            </div>
+            <iframe 
+              id="video" 
+              class="video-frame hidden" 
+              allowfullscreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            ></iframe>
+          </div>
+        </div>
+      </section>
 
-  <div class="room-box">
-    <button onclick="createRoom()">Create Room</button>
+      <!-- Chat Section -->
+      <section class="card chat-card">
+        <div class="card-header">
+          <h2>💬 Live Chat</h2>
+          <div class="chat-controls">
+            <span class="typing-indicator hidden" id="typingIndicator">
+              <span class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+              <span id="typingText">Someone is typing...</span>
+            </span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chat-container">
+            <div id="chat" class="chat-messages"></div>
+          </div>
+          <div class="chat-input-container">
+            <input 
+              type="text" 
+              id="msg" 
+              placeholder="Type a message..." 
+              maxlength="200"
+              onkeypress="if(event.key==='Enter') sendMsg()"
+              oninput="handleTyping()"
+            >
+            <button class="btn-send" onclick="sendMsg()">
+              <span>📤</span>
+            </button>
+          </div>
+        </div>
+      </section>
 
-    <input id="roomInput" placeholder="Enter Room ID">
-    <button onclick="joinRoom()">Join</button>
+    </div>
+  </main>
 
-    <p id="roomDisplay"></p>
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-content">
+      <div class="loading-spinner-large">
+        <div class="spinner"></div>
+      </div>
+      <p>Connecting to SceneSync...</p>
+    </div>
   </div>
 
-  <div class="video-box">
-    <input id="urlInput" placeholder="Paste YouTube Embed Link">
-    <button onclick="setUrl()">Set Video</button>
-
-    <iframe id="video" width="100%" height="300"></iframe>
-  </div>
-
-  <div class="chat-box">
-    <input id="msg" placeholder="Type message">
-    <button onclick="sendMsg()">Send</button>
-
-    <div id="chat"></div>
-  </div>
-
-</div>
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="app.js"></script>
-
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
