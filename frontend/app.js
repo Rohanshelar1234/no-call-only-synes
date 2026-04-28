@@ -66,6 +66,28 @@ function setVideo() {
   socket.emit("set-video", { room, url });
 }
 
+// SCREEN SHARE
+async function shareScreen() {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia();
+    const video = document.getElementById("video");
+    video.srcObject = stream;
+    
+    // Notify others in room
+    socket.emit("screen-share-start", { room });
+    
+    // Handle when user stops sharing
+    stream.getVideoTracks()[0].addEventListener('ended', () => {
+      video.srcObject = null;
+      socket.emit("screen-share-stop", { room });
+    });
+    
+  } catch (err) {
+    console.error("Error sharing screen:", err);
+    alert("Screen sharing failed or was cancelled");
+  }
+}
+
 // SEND MESSAGE
 function sendMsg() {
   let msg = document.getElementById("msg").value;
@@ -85,5 +107,22 @@ socket.on("chat", (data) => {
   let div = document.createElement("div");
   div.innerText = data;
 
+  document.getElementById("chat").appendChild(div);
+});
+
+// SCREEN SHARE EVENTS
+socket.on("screen-share-start", () => {
+  console.log("Someone started sharing screen");
+  let div = document.createElement("div");
+  div.innerText = "📺 User started sharing screen";
+  div.style.color = "#a855f7";
+  document.getElementById("chat").appendChild(div);
+});
+
+socket.on("screen-share-stop", () => {
+  console.log("Someone stopped sharing screen");
+  let div = document.createElement("div");
+  div.innerText = "📺 User stopped sharing screen";
+  div.style.color = "#ec4899";
   document.getElementById("chat").appendChild(div);
 });

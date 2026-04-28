@@ -57,6 +57,17 @@ io.on("connection", (socket) => {
     io.to(room).emit("chat", msg);
   });
 
+  // SCREEN SHARE
+  socket.on("screen-share-start", ({ room }) => {
+    console.log(`User ${socket.id} started sharing screen in room ${room}`);
+    socket.to(room).emit("screen-share-start");
+  });
+
+  socket.on("screen-share-stop", ({ room }) => {
+    console.log(`User ${socket.id} stopped sharing screen in room ${room}`);
+    socket.to(room).emit("screen-share-stop");
+  });
+
   // DISCONNECT
   socket.on("disconnect", () => {
     for (let room in rooms) {
