@@ -15,7 +15,13 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+// Enhanced room state management
 let rooms = {};
+
+// Add a health check endpoint
+app.get("/", (req, res) => {
+  res.send("SceneSync Backend is running!");
+});
 
 io.on("connection", (socket) => {
 
@@ -23,14 +29,24 @@ io.on("connection", (socket) => {
     socket.join(room);
 
     if (!rooms[room]) {
-      rooms[room] = { url: "" };
+      rooms[room] = { 
+        url: "", 
+        users: [],
+        videoState: { time: 0, paused: true }
+      };
     }
 
-    let count = io.sockets.adapter.rooms.get(room)?.size || 1;
+    // Add user to room
+    if (!rooms[room].users.includes(socket.id)) {
+      rooms[room].users.push(socket.id);
+    }
+
+    let count = rooms[room].users.length;
 
     io.to(room).emit("user-count", count);
     socket.to(room).emit("chat", "A user joined the room");
     socket.emit("state", rooms[room]);
+    console.log(`User ${socket.id} joined room ${room}. Users: ${count}`);
   });
 
   socket.on("set-url", ({ room, url }) => {
@@ -56,11 +72,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    // Update user count for all rooms the socket was in
-    socket.rooms.forEach(room => {
-      if (room !== socket.id) {
-        let count = io.sockets.adapter.rooms.get(room)?.size || 0;
+    // Remove user from all rooms
+    Object.keys(rooms).forEach(room => {
+      if (rooms[room].users.includes(socket.id)) {
+        rooms[room].users = rooms[room].users.filter(user => user !== socket.id);
+        let count = rooms[room].users.length;
         io.to(room).emit("user-count", count);
+        io.to(room).emit("chat", "A user left the room");
+        console.log(`User ${socket.id} left room ${room}. Users: ${count}`);
+        
+        // Clean up empty rooms
+        if (count === 0) {
+          delete rooms[room];
+          console.log(`Room ${room} deleted (empty)`);
+        }
       }
     });
   });

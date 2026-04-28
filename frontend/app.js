@@ -3,6 +3,19 @@ let currentRoom = null;
 let localStream;
 let username = "User";
 
+// Connection status
+socket.on("connect", () => {
+  console.log("Connected to backend:", socket.connected);
+  document.getElementById("connectionStatus").className = "connection-status connected";
+  document.getElementById("connectionText").textContent = "Connected";
+});
+
+socket.on("disconnect", () => {
+  console.log("Disconnected from backend");
+  document.getElementById("connectionStatus").className = "connection-status disconnected";
+  document.getElementById("connectionText").textContent = "Disconnected";
+});
+
 // Room functions
 function createRoom() {
   currentRoom = Math.random().toString(36).substring(2, 8);
@@ -20,6 +33,9 @@ function joinRoom() {
     currentRoom = roomId;
     socket.emit("join-room", roomId);
     document.getElementById("roomDisplay").textContent = `Room: ${roomId}`;
+    console.log("Joined room:", roomId);
+  } else {
+    alert("Please enter a room ID");
   }
 }
 
@@ -45,9 +61,10 @@ function setUrl() {
 
 function loadVideo(url) {
   const video = document.getElementById("video");
-  video.srcObject = null; // Clear any screen share stream
-  video.src = url;
-  video.play();
+  if (video) {
+    video.src = url;
+    console.log("Loaded video:", url);
+  }
 }
 
 // Username function
