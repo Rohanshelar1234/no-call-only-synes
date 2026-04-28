@@ -93,29 +93,16 @@ function joinRoom() {
 
 // SAFE Video Functions
 function setUrl() {
-  console.log("Load Video clicked")
-  
-  const urlInputEl = document.getElementById("urlInput")
-  
   if (!room) {
-    alert("Join room first")
-    return
+    alert("Join room first");
+    return;
   }
-  
-  if (!urlInputEl || !urlInputEl.value) {
-    alert("Enter video URL")
-    return
-  }
-  
-  let url = urlInputEl.value.trim()
-  
-  // Convert YouTube URL to embed format using the improved function
-  url = convertToEmbed(url)
-  
-  socket.emit("set-url", { room, url })
-  
-  showStatus("Loading video...", "info")
-  console.log("Setting video URL:", url)
+
+  let url = document.getElementById("urlInput").value;
+
+  url = convertToEmbed(url);
+
+  socket.emit("set-url", { room, url });
 }
 
 // Receive video URL from server
