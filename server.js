@@ -11,68 +11,33 @@ const io = new Server(server, {
 
 app.use(express.static("frontend"));
 
-let rooms = {}; // 🔥 important
+let rooms = {};
 
 io.on("connection", (socket) => {
 
-  console.log("User connected:", socket.id);
-
-  // JOIN ROOM
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
-  });
 
-  // SET VIDEO
-  socket.on("set-video", ({ room, url }) => {
-    if (rooms[room]) {
-      rooms[room].video = url;
-      io.to(room).emit("set-video", url);
+    // create room if not exists
+    if (!rooms[roomId]) {
+      rooms[roomId] = 0;
     }
+
+    rooms[roomId]++;
+
+    console.log("User joined:", roomId);
+
+    // 🔥 send confirmation to user
+    socket.emit("join-success", roomId);
+
+    // 🔥 update all users count
+    io.to(roomId).emit("user-count", rooms[roomId]);
   });
 
-  // CHAT
-  socket.on("chat", ({ room, msg }) => {
-    io.to(room).emit("chat", msg);
-  });
-
-  // SCREEN SHARE
-  socket.on("screen-share-start", ({ room }) => {
-    console.log(`User ${socket.id} started sharing screen in room ${room}`);
-    socket.to(room).emit("screen-share-start");
-  });
-
-  socket.on("screen-share-stop", ({ room }) => {
-    console.log(`User ${socket.id} stopped sharing screen in room ${room}`);
-    socket.to(room).emit("screen-share-stop");
-  });
-
-  // PLAY/PAUSE
-  socket.on("play", (room) => {
-    console.log(`User ${socket.id} played video in room ${room}`);
-    socket.to(room).emit("play");
-  });
-
-  socket.on("pause", (room) => {
-    console.log(`User ${socket.id} paused video in room ${room}`);
-    socket.to(room).emit("pause");
-  });
-
-  // TYPING
-  socket.on("typing", (room) => {
-    console.log(`User ${socket.id} is typing in room ${room}`);
-    socket.to(room).emit("typing");
-  });
-
-  socket.on("stop-typing", (room) => {
-    console.log(`User ${socket.id} stopped typing in room ${room}`);
-    socket.to(room).emit("stop-typing");
-  });
-
-  // DISCONNECT
   socket.on("disconnect", () => {
-    for (let room in rooms) {
-      rooms[room].users = rooms[room].users.filter(id => id !== socket.id);
-      io.to(room).emit("user-count", rooms[room].users.length);
+    for (let roomId in rooms) {
+      rooms[roomId]--;
+      io.to(roomId).emit("user-count", rooms[roomId]);
     }
   });
 
