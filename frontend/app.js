@@ -1,17 +1,8 @@
-// SceneSync - Working Real-time Co-watching App
+// SceneSync - Safe Functionality Fix (NO UI CHANGES)
 let room = ""
 
 // Connect to production backend
 const socket = io("https://no-call-only-synes.onrender.com")
-
-// DOM Elements
-const roomDisplay = document.getElementById("roomDisplay")
-const roomInput = document.getElementById("roomInput")
-const urlInput = document.getElementById("urlInput")
-const video = document.getElementById("video")
-const chat = document.getElementById("chat")
-const msg = document.getElementById("msg")
-const status = document.getElementById("status")
 
 // Socket Events
 socket.on("connect", () => {
@@ -38,14 +29,21 @@ socket.on("reconnect_attempt", (attemptNumber) => {
   console.log(`🔄 Reconnection attempt ${attemptNumber}`)
 })
 
-// Room Functions
+// SAFE Room Functions
 function createRoom() {
-  console.log("Create clicked")
+  console.log("Create Room clicked")
   
   room = Math.random().toString(36).substring(2, 8).toUpperCase()
   
-  roomDisplay.innerText = "Room: " + room
-  roomInput.value = ""
+  const roomDisplayEl = document.getElementById("roomDisplay")
+  if (roomDisplayEl) {
+    roomDisplayEl.innerText = "Room: " + room
+  }
+  
+  const roomInputEl = document.getElementById("roomInput")
+  if (roomInputEl) {
+    roomInputEl.value = ""
+  }
   
   socket.emit("join-room", room)
   
@@ -54,16 +52,25 @@ function createRoom() {
 }
 
 function joinRoom() {
-  const inputRoom = roomInput.value.trim().toUpperCase()
+  console.log("Join Room clicked")
   
-  if (!inputRoom) {
+  const roomInputEl = document.getElementById("roomInput")
+  
+  if (!roomInputEl || !roomInputEl.value) {
     alert("Enter Room ID")
     return
   }
   
-  room = inputRoom
-  roomDisplay.innerText = "Room: " + room
-  roomInput.value = ""
+  room = roomInputEl.value.trim().toUpperCase()
+  
+  const roomDisplayEl = document.getElementById("roomDisplay")
+  if (roomDisplayEl) {
+    roomDisplayEl.innerText = "Room: " + room
+  }
+  
+  if (roomInputEl) {
+    roomInputEl.value = ""
+  }
   
   socket.emit("join-room", room)
   
@@ -71,19 +78,23 @@ function joinRoom() {
   console.log("Joined room:", room)
 }
 
-// Video Functions
+// SAFE Video Functions
 function setUrl() {
+  console.log("Load Video clicked")
+  
+  const urlInputEl = document.getElementById("urlInput")
+  
   if (!room) {
     alert("Join room first")
     return
   }
   
-  let url = urlInput.value.trim()
-  
-  if (!url) {
+  if (!urlInputEl || !urlInputEl.value) {
     alert("Enter video URL")
     return
   }
+  
+  let url = urlInputEl.value.trim()
   
   // Convert YouTube URL to embed format
   if (url.includes("watch?v=")) {
@@ -104,64 +115,85 @@ function setUrl() {
 // Receive video URL from server
 socket.on("set-url", (url) => {
   if (url) {
-    video.src = url
-    showStatus("Video loaded!", "success")
-    console.log("Video URL received:", url)
+    const videoEl = document.getElementById("video")
+    if (videoEl) {
+      videoEl.src = url
+      showStatus("Video loaded!", "success")
+      console.log("Video URL received:", url)
+    }
   }
 })
 
-// Chat Functions
+// SAFE Chat Functions
 function sendMsg() {
-  const message = msg.value.trim()
+  console.log("Send Message clicked")
+  
+  const msgEl = document.getElementById("msg")
   
   if (!room) {
     alert("Join room first")
     return
   }
   
-  if (!message) {
+  if (!msgEl || !msgEl.value) {
     alert("Enter message")
     return
   }
   
+  const message = msgEl.value.trim()
+  
   socket.emit("chat", { room, msg: message })
-  msg.value = ""
+  
+  if (msgEl) {
+    msgEl.value = ""
+  }
   
   console.log("Sent message:", message)
 }
 
 // Receive chat messages
 socket.on("chat", (data) => {
-  const messageDiv = document.createElement("div")
-  messageDiv.className = "chat-message"
-  messageDiv.textContent = data.msg || data // Handle both formats
-  chat.appendChild(messageDiv)
-  chat.scrollTop = chat.scrollHeight
-  
-  console.log("Received message:", data)
+  const chatEl = document.getElementById("chat")
+  if (chatEl) {
+    const messageDiv = document.createElement("div")
+    messageDiv.className = "chat-message"
+    messageDiv.textContent = data.msg || data // Handle both formats
+    chatEl.appendChild(messageDiv)
+    chatEl.scrollTop = chatEl.scrollHeight
+    
+    console.log("Received message:", data)
+  }
 })
 
-// Status Display
+// SAFE Status Display
 function showStatus(message, type) {
-  status.textContent = message
-  status.className = `status ${type}`
-  status.style.display = "block"
-  
-  // Auto-hide after 3 seconds
-  setTimeout(() => {
-    status.style.display = "none"
-  }, 3000)
+  const statusEl = document.getElementById("status")
+  if (statusEl) {
+    statusEl.textContent = message
+    statusEl.className = `status ${type}`
+    statusEl.style.display = "block"
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      if (statusEl) {
+        statusEl.style.display = "none"
+      }
+    }, 3000)
+  }
 }
 
-// Keyboard shortcuts
+// SAFE Keyboard shortcuts
 document.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
-    if (document.activeElement === roomInput) {
-      joinRoom()
-    } else if (document.activeElement === urlInput) {
-      setUrl()
-    } else if (document.activeElement === msg) {
-      sendMsg()
+    const activeElement = document.activeElement
+    if (activeElement) {
+      if (activeElement.id === 'roomInput') {
+        joinRoom()
+      } else if (activeElement.id === 'urlInput') {
+        setUrl()
+      } else if (activeElement.id === 'msg') {
+        sendMsg()
+      }
     }
   }
 })
@@ -171,11 +203,14 @@ const urlParams = new URLSearchParams(window.location.search)
 const roomFromUrl = urlParams.get('room')
 
 if (roomFromUrl) {
-  roomInput.value = roomFromUrl.toUpperCase()
-  showStatus(`Room ${roomFromUrl} detected in URL`, "info")
-  setTimeout(() => {
-    joinRoom()
-  }, 1000)
+  const roomInputEl = document.getElementById("roomInput")
+  if (roomInputEl) {
+    roomInputEl.value = roomFromUrl.toUpperCase()
+    showStatus(`Room ${roomFromUrl} detected in URL`, "info")
+    setTimeout(() => {
+      joinRoom()
+    }, 1000)
+  }
 }
 
-console.log("🎬 SceneSync app loaded successfully!")
+console.log("🎬 SceneSync app loaded with safe functionality fixes!")
