@@ -1,60 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SceneSync - No call, just sync</title>
-    <link rel="stylesheet" href="style.css">
+  <title>SceneSync</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="container">
-    <h1>SceneSync</h1>
-    <h2>No call, just sync</h2>
 
-    <div class="card">
-        <div class="status">
-            <span id="connectionStatus" class="connection-status disconnected"></span>
-            <span id="connectionText">Connecting...</span>
-        </div>
-        
-        <div class="button-group">
-            <button onclick="createRoom()">Create Room</button>
-            <input id="roomInput" placeholder="Enter Room ID">
-            <button onclick="joinRoom()">Join Room</button>
-        </div>
+  <h1>SceneSync</h1>
+  <p>No call, just sync.</p>
 
-        <div id="roomDisplay" class="status">Room: Not Joined</div>
-        <div id="users" class="status">Users: 0</div>
+  <div class="room-box">
+    <button onclick="createRoom()">Create Room</button>
 
-        <div class="button-group">
-            <input id="username" placeholder="Enter your name">
-            <button onclick="setName()">Set Name</button>
-        </div>
-    </div>
+    <input id="roomInput" placeholder="Enter Room ID">
+    <button onclick="joinRoom()">Join</button>
 
-    <div class="card">
-        <div class="button-group">
-            <input id="urlInput" placeholder="Paste YouTube URL">
-            <button onclick="setUrl()">Set Video</button>
-            <button onclick="startScreenShare()">Start Screen Share</button>
-        </div>
+    <p id="roomDisplay"></p>
+  </div>
 
-        <iframe id="video" width="600" height="350" allowfullscreen></iframe>
-    </div>
+  <div class="video-box">
+    <input id="urlInput" placeholder="Paste YouTube Embed Link">
+    <button onclick="setUrl()">Set Video</button>
 
-    <div class="card">
-        <div class="button-group">
-            <input id="msg" placeholder="Type a message">
-            <button onclick="sendMsg()">Send</button>
-            <button onclick="clearChat()">Clear Chat</button>
-        </div>
+    <iframe id="video"></iframe>
+  </div>
 
-        <div id="chat"></div>
-    </div>
+  <div class="chat-box">
+    <input id="msg" placeholder="Type message">
+    <button onclick="sendMsg()">Send</button>
+
+    <div id="chat"></div>
+  </div>
+
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script src="app.js"></script>
 
 </body>
