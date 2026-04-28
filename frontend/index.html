@@ -3,213 +3,69 @@
 <head>
   <title>SceneSync - Real-time Co-watching</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0F0F0F;
-      color: #FFFFFF;
-      min-height: 100vh;
-      padding: 20px;
+      margin: 0;
+      background: #0f0f0f;
+      font-family: Poppins, sans-serif;
+      color: white;
     }
 
     .container {
-      max-width: 800px;
-      margin: 0 auto;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
     }
 
     h1 {
-      text-align: center;
-      margin-bottom: 10px;
-      background: linear-gradient(135deg, #A855F7, #EC4899);
+      background: linear-gradient(45deg, #a855f7, #ec4899);
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 2.5rem;
-      font-weight: 800;
+      color: transparent;
     }
 
-    .subtitle {
-      text-align: center;
-      color: #A1A1AA;
-      margin-bottom: 40px;
-      font-size: 1.1rem;
+    .room-box, .video-box, .chat-box {
+      background: #18181b;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 15px;
+      transition: 0.3s;
     }
 
-    .card {
-      background: #18181B;
-      border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(168, 85, 247, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    }
-
-    .card h2 {
-      margin-bottom: 20px;
-      color: #A855F7;
-      font-size: 1.3rem;
+    .room-box:hover, .video-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(168,85,247,0.3);
     }
 
     button {
-      background: linear-gradient(135deg, #A855F7, #EC4899);
-      color: #FFFFFF;
+      padding: 10px 15px;
       border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1rem;
+      border-radius: 10px;
+      background: linear-gradient(45deg, #a855f7, #ec4899);
+      color: white;
       cursor: pointer;
-      transition: all 0.25s ease;
-      pointer-events: auto;
-      margin: 5px;
+      transition: 0.2s;
     }
 
     button:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 25px rgba(168, 85, 247, 0.4);
-    }
-
-    button:active {
-      transform: scale(0.98);
+      box-shadow: 0 0 10px #ec4899;
     }
 
     input {
-      background: #27272A;
-      color: #FFFFFF;
-      border: 1px solid rgba(168, 85, 247, 0.3);
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 1rem;
-      width: 100%;
-      margin: 5px 0;
-      transition: all 0.25s ease;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #A855F7;
-      box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
-    }
-
-    input::placeholder {
-      color: #71717A;
-    }
-
-    .room-display {
-      background: #27272A;
-      padding: 15px;
-      border-radius: 12px;
-      margin: 15px 0;
-      text-align: center;
-      font-family: 'Courier New', monospace;
-      font-size: 1.2rem;
-      color: #EC4899;
-      border: 1px solid rgba(236, 72, 153, 0.3);
-    }
-
-    .video-container {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: #0F0F0F;
-      border-radius: 16px;
-      overflow: hidden;
-      margin: 20px 0;
-      border: 1px solid rgba(168, 85, 247, 0.2);
-    }
-
-    #video {
-      width: 100%;
-      height: 100%;
-      border: none;
-      border-radius: 16px;
-    }
-
-    .chat-container {
-      height: 300px;
-      overflow-y: auto;
-      background: #0F0F0F;
-      border-radius: 12px;
-      padding: 15px;
-      margin: 15px 0;
-      border: 1px solid rgba(168, 85, 247, 0.2);
-    }
-
-    .chat-message {
-      background: #27272A;
-      padding: 10px 15px;
-      border-radius: 12px;
-      margin: 5px 0;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .input-group {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .input-group input {
-      flex: 1;
-    }
-
-    .status {
-      text-align: center;
       padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      font-size: 0.9rem;
+      border-radius: 10px;
+      border: none;
+      margin: 5px;
+      width: 60%;
+      background: #1f1f23;
+      color: white;
     }
 
-    .status.success {
-      background: rgba(16, 185, 129, 0.1);
-      color: #10B981;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .status.error {
-      background: rgba(239, 68, 68, 0.1);
-      color: #EF4444;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .status.info {
-      background: rgba(168, 85, 247, 0.1);
-      color: #A855F7;
-      border: 1px solid rgba(168, 85, 247, 0.3);
-    }
-
-    @media (max-width: 640px) {
-      .container {
-        padding: 10px;
-      }
-      
-      .card {
-        padding: 20px;
-      }
-      
-      h1 {
-        font-size: 2rem;
-      }
-      
-      .input-group {
-        flex-direction: column;
-      }
+    iframe {
+      width: 100%;
+      height: 400px;
+      border-radius: 15px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -220,46 +76,38 @@
   <h1>🎬 SceneSync</h1>
   <p class="subtitle">No call, just sync.</p>
 
-  <!-- Room Control Card -->
-  <div class="card">
+  <!-- Room Control Box -->
+  <div class="room-box">
     <h2>🎯 Room Control</h2>
     
     <button onclick="createRoom()">🏠 Create Room</button>
     
-    <div class="input-group">
-      <input id="roomInput" placeholder="Enter Room ID" maxlength="10">
-      <button onclick="joinRoom()">🔗 Join</button>
-    </div>
+    <input id="roomInput" placeholder="Enter Room ID" maxlength="10">
+    <button onclick="joinRoom()">🔗 Join</button>
     
-    <div class="room-display" id="roomDisplay">No Room</div>
+    <div id="roomDisplay">No Room</div>
     
-    <div id="status" class="status info" style="display: none;"></div>
+    <div id="status" style="display: none;"></div>
   </div>
 
-  <!-- Video Card -->
-  <div class="card">
+  <!-- Video Box -->
+  <div class="video-box">
     <h2>🎬 Video Player</h2>
     
-    <div class="input-group">
-      <input id="urlInput" placeholder="Paste YouTube URL (e.g., https://youtube.com/watch?v=...)">
-      <button onclick="setUrl()">▶️ Load</button>
-    </div>
+    <input id="urlInput" placeholder="Paste YouTube URL (e.g., https://youtube.com/watch?v=...)">
+    <button onclick="setUrl()">▶️ Load</button>
     
-    <div class="video-container">
-      <iframe id="video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
+    <iframe id="video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
 
-  <!-- Chat Card -->
-  <div class="card">
+  <!-- Chat Box -->
+  <div class="chat-box">
     <h2>💬 Live Chat</h2>
     
-    <div class="chat-container" id="chat"></div>
+    <div id="chat"></div>
     
-    <div class="input-group">
-      <input id="msg" placeholder="Type a message..." maxlength="200">
-      <button onclick="sendMsg()">📤 Send</button>
-    </div>
+    <input id="msg" placeholder="Type a message..." maxlength="200">
+    <button onclick="sendMsg()">📤 Send</button>
   </div>
 
 </div>
