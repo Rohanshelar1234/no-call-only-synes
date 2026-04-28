@@ -7,7 +7,11 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: { 
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
 
 app.use(cors());
@@ -24,6 +28,7 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
   console.log(`✅ User connected: ${socket.id}`);
+  console.log(`📊 Total connected users: ${io.engine.clientsCount}`);
 
   socket.on("join-room", (room) => {
     if (!room) {

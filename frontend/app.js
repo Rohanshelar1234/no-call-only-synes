@@ -1,8 +1,8 @@
 // SceneSync - Working Real-time Co-watching App
 let room = ""
 
-// Use local connection for development, change to your backend URL for production
-const socket = io("http://localhost:3000")
+// Connect to production backend
+const socket = io("https://no-call-only-synes.onrender.com")
 
 // DOM Elements
 const roomDisplay = document.getElementById("roomDisplay")
@@ -15,7 +15,7 @@ const status = document.getElementById("status")
 
 // Socket Events
 socket.on("connect", () => {
-  console.log("✅ Connected to server")
+  console.log("✅ Connected to production server")
   showStatus("Connected to server", "success")
 })
 
@@ -27,6 +27,15 @@ socket.on("disconnect", () => {
 socket.on("connect_error", (error) => {
   console.error("❌ Connection error:", error)
   showStatus("Failed to connect to server", "error")
+})
+
+socket.on("reconnect", () => {
+  console.log("🔄 Reconnected to server")
+  showStatus("Reconnected to server", "success")
+})
+
+socket.on("reconnect_attempt", (attemptNumber) => {
+  console.log(`🔄 Reconnection attempt ${attemptNumber}`)
 })
 
 // Room Functions
