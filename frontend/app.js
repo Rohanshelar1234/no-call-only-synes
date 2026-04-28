@@ -19,6 +19,7 @@ socket.on("joined-success", (room) => {
 // User count updates
 socket.on("user-count", (count) => {
   console.log("Users in room:", count);
+  document.getElementById("users").innerText = "Users: " + count;
 });
 
 // Video updates
