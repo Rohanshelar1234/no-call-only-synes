@@ -40,35 +40,15 @@ function createRoom() {
 
 // JOIN ROOM
 const joinRoom = () => {
-  console.log("Join clicked"); // 👉 हे print होतंय का?
-  
-  let inputElement = document.getElementById("roomInput");
-  console.log("Input element:", inputElement);
-  
-  if (!inputElement) {
-    alert("Room input field not found!");
+  const input = document.getElementById("roomInput").value;
+
+  if (!input) {
+    alert("Enter Room ID");
     return;
   }
-  
-  let inputRoom = inputElement.value;
-  console.log("Input value:", inputRoom);
-  
-  if (!inputRoom || inputRoom.trim() === "") {
-    alert("Please enter a Room ID");
-    return;
-  }
-  
-  const roomId = inputRoom.trim().toUpperCase();
-  room = roomId;
-  console.log("Processed room ID:", roomId);
-  
-  let displayElement = document.getElementById("roomDisplay");
-  if (displayElement) {
-    displayElement.innerText = "Room: " + roomId;
-    console.log("Room display updated");
-  }
-  
-  console.log("Emitting join-room event for room:", roomId);
+
+  const roomId = input.trim().toUpperCase();
+
   socket.emit("join-room", roomId);
 };
 
