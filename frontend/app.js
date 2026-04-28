@@ -50,6 +50,34 @@ function joinRoom() {
   socket.emit("join-room", room);
 }
 
+// COPY ROOM ID
+function copyRoom() {
+  if (!room) {
+    alert("No room to copy");
+    return;
+  }
+  
+  navigator.clipboard.writeText(room).then(() => {
+    // Show success message
+    let div = document.createElement("div");
+    div.innerText = "📋 Room ID copied!";
+    div.style.color = "#10B981";
+    div.style.fontWeight = "bold";
+    document.getElementById("chat").appendChild(div);
+    
+    // Remove message after 2 seconds
+    setTimeout(() => {
+      if (div.parentNode) {
+        div.parentNode.removeChild(div);
+      }
+    }, 2000);
+    
+  }).catch(err => {
+    console.error("Failed to copy room ID:", err);
+    alert("Failed to copy room ID");
+  });
+}
+
 // SET VIDEO
 function setVideo() {
   let url = document.getElementById("urlInput").value;
