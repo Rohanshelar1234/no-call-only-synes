@@ -15,11 +15,11 @@ app.use(express.json());
 app.use(express.static("frontend"));
 
 // Room state management
-let rooms = {};
+const rooms = {};
 
 // Health check endpoint
 app.get("/", (req, res) => {
-  res.send("🎬 SceneSync Premium Server is running!");
+  res.send("🎬 SceneSync Server is running!");
 });
 
 io.on("connection", (socket) => {
@@ -27,7 +27,7 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", (room) => {
     if (!room) {
-      socket.emit("error", "Room ID is required");
+      console.log("❌ Room ID is required");
       return;
     }
 
@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
     // Initialize room if it doesn't exist
     if (!rooms[room]) {
       rooms[room] = {
+        video: "",
         users: [],
         createdAt: new Date().toISOString()
       };
@@ -49,6 +50,11 @@ io.on("connection", (socket) => {
     
     console.log(`🏠 ${socket.id} joined room ${room}. Users: ${rooms[room].users.length}`);
     
+    // Send current video to the new user
+    if (rooms[room].video) {
+      socket.emit("set-url", rooms[room].video);
+    }
+    
     // Notify others in room
     socket.to(room).emit("user-joined", {
       userId: socket.id,
@@ -57,17 +63,40 @@ io.on("connection", (socket) => {
   });
 
   socket.on("set-url", ({ room, url }) => {
-    if (!room || !url) return;
+    if (!room || !url) {
+      console.log("❌ Room and URL required");
+      return;
+    }
+    
+    if (!rooms[room]) {
+      console.log(`❌ Room ${room} does not exist`);
+      return;
+    }
+    
+    // Update room video
+    rooms[room].video = url;
     
     console.log(`🎬 Video URL set in room ${room}: ${url}`);
+    
+    // Send to all users in room
     io.to(room).emit("set-url", url);
   });
 
   socket.on("chat", ({ room, msg }) => {
-    if (!room || !msg) return;
+    if (!room || !msg) {
+      console.log("❌ Room and message required");
+      return;
+    }
+    
+    if (!rooms[room]) {
+      console.log(`❌ Room ${room} does not exist`);
+      return;
+    }
     
     console.log(`💬 Message in room ${room}: ${msg}`);
-    io.to(room).emit("chat", msg);
+    
+    // Send to all users in room
+    io.to(room).emit("chat", { msg, userId: socket.id });
   });
 
   socket.on("disconnect", () => {
@@ -84,6 +113,8 @@ io.on("connection", (socket) => {
           userCount: userCount
         });
         
+        console.log(`👋 User ${socket.id} left room ${room}. Users: ${userCount}`);
+        
         // Clean up empty rooms
         if (userCount === 0) {
           delete rooms[room];
@@ -96,7 +127,7 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 SceneSync Premium Server running on port ${PORT}`);
+  console.log(`🚀 SceneSync Server running on port ${PORT}`);
   console.log(`📱 Frontend: http://localhost:${PORT}`);
-  console.log(`🔗 Ready for premium co-watching experience!`);
+  console.log(`🔗 Ready for real-time co-watching!`);
 });
