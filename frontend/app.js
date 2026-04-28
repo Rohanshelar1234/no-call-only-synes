@@ -2,6 +2,15 @@ const socket = io();
 
 let room = "";
 
+// Check connection status
+socket.on("connect", () => {
+  console.log("Connected to server");
+});
+
+socket.on("disconnect", () => {
+  console.log("Disconnected from server");
+});
+
 // CREATE ROOM
 function createRoom() {
   room = Math.random().toString(36).substring(2, 8);
@@ -11,7 +20,14 @@ function createRoom() {
 
 // JOIN ROOM
 function joinRoom() {
-  room = document.getElementById("roomInput").value;
+  let inputRoom = document.getElementById("roomInput").value;
+  
+  if (!inputRoom) {
+    alert("Please enter a Room ID");
+    return;
+  }
+  
+  room = inputRoom.trim().toUpperCase();
   document.getElementById("roomDisplay").innerText = "Room: " + room;
   socket.emit("join-room", room);
 }
