@@ -15,6 +15,7 @@ socket.on("disconnect", () => {
 // Room join success
 socket.on("joined-success", (room) => {
   console.log("Successfully joined room:", room);
+  alert("Successfully joined room: " + room);
 });
 
 // User count updates
@@ -39,16 +40,34 @@ function createRoom() {
 
 // JOIN ROOM
 function joinRoom() {
-  let inputRoom = document.getElementById("roomInput").value;
+  console.log("joinRoom function called!");
   
-  if (!inputRoom) {
+  let inputElement = document.getElementById("roomInput");
+  console.log("Input element:", inputElement);
+  
+  if (!inputElement) {
+    alert("Room input field not found!");
+    return;
+  }
+  
+  let inputRoom = inputElement.value;
+  console.log("Input value:", inputRoom);
+  
+  if (!inputRoom || inputRoom.trim() === "") {
     alert("Please enter a Room ID");
     return;
   }
   
   room = inputRoom.trim().toUpperCase();
-  document.getElementById("roomDisplay").innerText = "Room: " + room;
-  console.log("Joining room:", room);
+  console.log("Processed room ID:", room);
+  
+  let displayElement = document.getElementById("roomDisplay");
+  if (displayElement) {
+    displayElement.innerText = "Room: " + room;
+    console.log("Room display updated");
+  }
+  
+  console.log("Emitting join-room event for room:", room);
   socket.emit("join-room", room);
 }
 
