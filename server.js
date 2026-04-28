@@ -19,7 +19,6 @@ io.on("connection", (socket) => {
 
   // JOIN ROOM
   socket.on("join-room", (roomId) => {
-    console.log("User joining:", roomId);
     socket.join(roomId);
   });
 
