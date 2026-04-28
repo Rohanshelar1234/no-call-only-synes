@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io("http://localhost:3000");
 
 let room = "";
 let typingTimeout = null;
@@ -31,8 +31,9 @@ socket.on("set-video", (url) => {
 
 // CREATE ROOM
 function createRoom() {
-  room = Math.random().toString(36).substring(2, 8);
+  room = Math.random().toString(36).substring(2, 8).toUpperCase();
   document.getElementById("roomDisplay").innerText = "Room: " + room;
+  console.log("Creating room:", room);
   socket.emit("join-room", room);
 }
 
@@ -47,6 +48,7 @@ function joinRoom() {
   
   room = inputRoom.trim().toUpperCase();
   document.getElementById("roomDisplay").innerText = "Room: " + room;
+  console.log("Joining room:", room);
   socket.emit("join-room", room);
 }
 
@@ -203,10 +205,16 @@ function sendMsg() {
 
 // RECEIVE MESSAGE
 socket.on("chat", (data) => {
+  console.log("Received chat message:", data);
   let div = document.createElement("div");
   div.innerText = data;
+  div.style.margin = "5px 0";
+  div.style.padding = "8px";
+  div.style.background = "#27272A";
+  div.style.borderRadius = "8px";
 
   document.getElementById("chat").appendChild(div);
+  document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
 });
 
 // SCREEN SHARE EVENTS
