@@ -1,132 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SceneSync - Advanced Co-Watching Platform</title>
+  <title>SceneSync</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 </head>
 
 <body>
-  <!-- Glass Navbar -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-brand">
-        <span class="logo">🎬</span>
-        <span class="brand-text">SceneSync</span>
-      </div>
-      <div class="nav-info">
-        <span id="connectionStatus" class="status-indicator offline"></span>
-        <span id="userCount" class="user-count">0 users</span>
-      </div>
-    </div>
-  </nav>
 
-  <!-- Main Container -->
-  <div class="main-container">
-    <!-- Welcome Modal (shown on first visit) -->
-    <div id="welcomeModal" class="modal">
-      <div class="modal-content">
-        <h2>Welcome to SceneSync</h2>
-        <p>Enter your username to get started</p>
-        <input type="text" id="usernameInput" placeholder="Enter your name" maxlength="20">
-        <button onclick="setUsername()">Start Watching</button>
-      </div>
-    </div>
+<div class="container">
 
-    <!-- Room Section -->
-    <div class="section room-section">
-      <div class="card glass-card">
-        <h3>🎯 Room Control</h3>
-        <div class="room-controls">
-          <button onclick="createRoom()" class="btn-primary">
-            <span class="btn-icon">🏠</span>
-            Create Room
-          </button>
-          <div class="join-room">
-            <input type="text" id="roomInput" placeholder="Enter Room ID" maxlength="10">
-            <button onclick="joinRoom()" class="btn-secondary">Join</button>
-          </div>
-        </div>
-        <div id="roomInfo" class="room-info hidden">
-          <div class="room-id-display">
-            <span class="label">Room ID:</span>
-            <span id="roomDisplay" class="room-id"></span>
-            <button onclick="copyRoomLink()" class="btn-copy">📋 Copy Link</button>
-          </div>
-          <div id="usersList" class="users-list"></div>
-        </div>
-      </div>
-    </div>
+  <h1>SceneSync</h1>
+  <p>No call, just sync.</p>
 
-    <!-- Video Section -->
-    <div class="section video-section">
-      <div class="card glass-card">
-        <h3>🎬 Video Player</h3>
-        <div class="video-controls">
-          <input type="text" id="urlInput" placeholder="Paste YouTube URL (e.g., https://youtube.com/watch?v=...)" 
-                 onkeypress="if(event.key==='Enter') setVideoUrl()">
-          <button onclick="setVideoUrl()" class="btn-primary">Set Video</button>
-          <button onclick="toggleScreenShare()" id="screenShareBtn" class="btn-secondary">
-            <span class="btn-icon">🖥️</span>
-            Share Screen
-          </button>
-        </div>
-        
-        <div class="video-container">
-          <div id="videoPlaceholder" class="video-placeholder">
-            <div class="placeholder-content">
-              <span class="placeholder-icon">🎬</span>
-              <p>Set a video URL to start watching together</p>
-            </div>
-          </div>
-          <iframe id="videoPlayer" class="video-frame hidden" allowfullscreen></iframe>
-          <video id="screenShareVideo" class="screen-share-video hidden" autoplay muted></video>
-        </div>
+  <div class="room-box">
+    <button onclick="createRoom()">Create Room</button>
 
-        <!-- Video Control Buttons -->
-        <div id="videoControls" class="video-controls-panel hidden">
-          <button onclick="playVideo()" class="btn-control">
-            <span class="btn-icon">▶️</span>
-          </button>
-          <button onclick="pauseVideo()" class="btn-control">
-            <span class="btn-icon">⏸️</span>
-          </button>
-          <button onclick="stopScreenShare()" id="stopShareBtn" class="btn-control hidden">
-            <span class="btn-icon">🛑</span>
-            Stop Share
-          </button>
-        </div>
-      </div>
-    </div>
+    <input id="roomInput" placeholder="Enter Room ID">
+    <button onclick="joinRoom()">Join</button>
 
-    <!-- Chat Section -->
-    <div class="section chat-section">
-      <div class="card glass-card">
-        <h3>💬 Live Chat</h3>
-        <div class="chat-container">
-          <div id="chatMessages" class="chat-messages"></div>
-          <div id="typingIndicator" class="typing-indicator hidden">
-            <span id="typingText">Someone is typing...</span>
-          </div>
-        </div>
-        <div class="chat-input-container">
-          <input type="text" id="chatInput" placeholder="Type a message..." maxlength="200" 
-                 onkeypress="if(event.key==='Enter') sendMessage()"
-                 oninput="handleTyping()">
-          <button onclick="sendMessage()" class="btn-send">
-            <span class="btn-icon">📤</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    <p id="roomDisplay"></p>
   </div>
 
-  <!-- Toast Notifications -->
-  <div id="toastContainer" class="toast-container"></div>
+  <div class="video-box">
+    <input id="urlInput" placeholder="Paste YouTube Embed Link">
+    <button onclick="setUrl()">Set Video</button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-  <script src="app.js"></script>
+    <iframe id="video" width="100%" height="300"></iframe>
+  </div>
+
+  <div class="chat-box">
+    <input id="msg" placeholder="Type message">
+    <button onclick="sendMsg()">Send</button>
+
+    <div id="chat"></div>
+  </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+
 </body>
 </html>
