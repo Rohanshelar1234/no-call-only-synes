@@ -58,17 +58,18 @@ const joinRoom = () => {
     return;
   }
   
-  room = inputRoom.trim().toUpperCase();
-  console.log("Processed room ID:", room);
+  const roomId = inputRoom.trim().toUpperCase();
+  room = roomId;
+  console.log("Processed room ID:", roomId);
   
   let displayElement = document.getElementById("roomDisplay");
   if (displayElement) {
-    displayElement.innerText = "Room: " + room;
+    displayElement.innerText = "Room: " + roomId;
     console.log("Room display updated");
   }
   
-  console.log("Emitting join-room event for room:", room);
-  socket.emit("join-room", room);
+  console.log("Emitting join-room event for room:", roomId);
+  socket.emit("join-room", roomId);
 };
 
 // COPY ROOM ID
