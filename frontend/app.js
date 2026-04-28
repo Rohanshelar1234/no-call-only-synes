@@ -14,8 +14,13 @@ socket.on("disconnect", () => {
 
 // Room join success
 socket.on("join-success", (roomId) => {
-  console.log("Successfully joined room:", roomId);
-  alert("Successfully joined room: " + roomId);
+  console.log("Joined room:", roomId);
+
+  room = roomId;
+
+  document.getElementById("roomDisplay").innerText = "Room: " + roomId;
+
+  alert("✅ Joined Room: " + roomId);
 });
 
 // User count updates
