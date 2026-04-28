@@ -18,30 +18,9 @@ io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   // JOIN ROOM
-  socket.on("join-room", (room) => {
-
-    if (!rooms[room]) {
-      rooms[room] = {
-        video: "",
-        users: []
-      };
-    }
-
-    socket.join(room);
-    rooms[room].users.push(socket.id);
-
-    console.log(`User ${socket.id} joined room ${room}`);
-
-    // 🔥 send success back
-    socket.emit("joined-success", room);
-
-    // 🔥 notify others
-    io.to(room).emit("user-count", rooms[room].users.length);
-
-    // 🔥 send existing video
-    if (rooms[room].video) {
-      socket.emit("set-video", rooms[room].video);
-    }
+  socket.on("join-room", (roomId) => {
+    console.log("User joining:", roomId);
+    socket.join(roomId);
   });
 
   // SET VIDEO
