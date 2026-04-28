@@ -39,8 +39,8 @@ function createRoom() {
 }
 
 // JOIN ROOM
-function joinRoom() {
-  console.log("joinRoom function called!");
+const joinRoom = () => {
+  console.log("Join clicked"); // 👉 हे print होतंय का?
   
   let inputElement = document.getElementById("roomInput");
   console.log("Input element:", inputElement);
@@ -69,7 +69,7 @@ function joinRoom() {
   
   console.log("Emitting join-room event for room:", room);
   socket.emit("join-room", room);
-}
+};
 
 // COPY ROOM ID
 function copyRoom() {
