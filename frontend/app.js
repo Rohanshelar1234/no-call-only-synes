@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io("https://no-call-only-synes.onrender.com");
 
 let room = "";
 
