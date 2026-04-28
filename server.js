@@ -1,53 +1,70 @@
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
-const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: { 
-    origin: "*",
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+  cors: { origin: "*" }
 });
 
-app.use(cors());
-app.use(express.json());
 app.use(express.static("frontend"));
 
-// Room state management
-const rooms = {};
-
-// Health check endpoint
-app.get("/", (req, res) => {
-  res.send("🎬 SceneSync Server is running!");
-});
+let rooms = {}; // 🔥 important
 
 io.on("connection", (socket) => {
 
+  console.log("User connected:", socket.id);
+
+  // JOIN ROOM
   socket.on("join-room", (room) => {
-    socket.join(room);
 
     if (!rooms[room]) {
-      rooms[room] = { video: "" };
+      rooms[room] = {
+        video: "",
+        users: []
+      };
     }
 
-    socket.emit("set-url", rooms[room].video);
+    socket.join(room);
+    rooms[room].users.push(socket.id);
+
+    console.log(`User ${socket.id} joined room ${room}`);
+
+    // 🔥 send success back
+    socket.emit("joined-success", room);
+
+    // 🔥 notify others
+    io.to(room).emit("user-count", rooms[room].users.length);
+
+    // 🔥 send existing video
+    if (rooms[room].video) {
+      socket.emit("set-video", rooms[room].video);
+    }
   });
 
-  socket.on("set-url", ({ room, url }) => {
-    rooms[room].video = url;
-    io.to(room).emit("set-url", url);
+  // SET VIDEO
+  socket.on("set-video", ({ room, url }) => {
+    if (rooms[room]) {
+      rooms[room].video = url;
+      io.to(room).emit("set-video", url);
+    }
+  });
+
+  // CHAT
+  socket.on("chat", ({ room, msg }) => {
+    io.to(room).emit("chat", msg);
+  });
+
+  // DISCONNECT
+  socket.on("disconnect", () => {
+    for (let room in rooms) {
+      rooms[room].users = rooms[room].users.filter(id => id !== socket.id);
+      io.to(room).emit("user-count", rooms[room].users.length);
+    }
   });
 
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🚀 SceneSync Server running on port ${PORT}`);
-  console.log(`📱 Frontend: http://localhost:${PORT}`);
-  console.log(`🔗 Ready for real-time co-watching!`);
-});
+server.listen(3000, () => console.log("Server running on 3000"));

@@ -11,6 +11,22 @@ socket.on("disconnect", () => {
   console.log("Disconnected from server");
 });
 
+// Room join success
+socket.on("joined-success", (room) => {
+  console.log("Successfully joined room:", room);
+});
+
+// User count updates
+socket.on("user-count", (count) => {
+  console.log("Users in room:", count);
+});
+
+// Video updates
+socket.on("set-video", (url) => {
+  console.log("Video URL:", url);
+  document.getElementById("video").src = url;
+});
+
 // CREATE ROOM
 function createRoom() {
   room = Math.random().toString(36).substring(2, 8);
@@ -30,6 +46,23 @@ function joinRoom() {
   room = inputRoom.trim().toUpperCase();
   document.getElementById("roomDisplay").innerText = "Room: " + room;
   socket.emit("join-room", room);
+}
+
+// SET VIDEO
+function setVideo() {
+  let url = document.getElementById("urlInput").value;
+
+  if (!room) {
+    alert("Join room first");
+    return;
+  }
+
+  if (!url) {
+    alert("Enter video URL");
+    return;
+  }
+
+  socket.emit("set-video", { room, url });
 }
 
 // SEND MESSAGE
