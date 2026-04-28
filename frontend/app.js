@@ -1,6 +1,7 @@
 const socket = io();
 
 let room = "";
+let typingTimeout = null;
 
 // Check connection status
 socket.on("connect", () => {
@@ -120,6 +121,43 @@ async function shareScreen() {
   }
 }
 
+// TYPING FUNCTIONS
+function handleTyping() {
+  if (!room) return;
+  
+  const msg = document.getElementById("msg").value;
+  
+  if (msg.length > 0) {
+    socket.emit("typing", room);
+    
+    // Clear existing timeout
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+    
+    // Set new timeout to stop typing after 3 seconds
+    typingTimeout = setTimeout(() => {
+      socket.emit("stop-typing", room);
+    }, 3000);
+  } else {
+    socket.emit("stop-typing", room);
+  }
+}
+
+function showTypingIndicator() {
+  const indicator = document.getElementById("typingIndicator");
+  if (indicator) {
+    indicator.style.display = "block";
+  }
+}
+
+function hideTypingIndicator() {
+  const indicator = document.getElementById("typingIndicator");
+  if (indicator) {
+    indicator.style.display = "none";
+  }
+}
+
 // SEND MESSAGE
 function sendMsg() {
   let msg = document.getElementById("msg").value;
@@ -130,6 +168,7 @@ function sendMsg() {
   }
 
   socket.emit("chat", { room, msg });
+  socket.emit("stop-typing", room); // Stop typing when message is sent
 
   document.getElementById("msg").value = "";
 }
@@ -173,5 +212,24 @@ socket.on("pause", () => {
   const video = document.getElementById("video");
   if (video.contentWindow) {
     video.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  }
+});
+
+// TYPING EVENTS
+socket.on("typing", () => {
+  console.log("Someone is typing");
+  showTypingIndicator();
+});
+
+socket.on("stop-typing", () => {
+  console.log("Someone stopped typing");
+  hideTypingIndicator();
+});
+
+// Add typing event listener to message input
+document.addEventListener('DOMContentLoaded', () => {
+  const msgInput = document.getElementById("msg");
+  if (msgInput) {
+    msgInput.addEventListener('input', handleTyping);
   }
 });

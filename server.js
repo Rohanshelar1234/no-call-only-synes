@@ -79,6 +79,17 @@ io.on("connection", (socket) => {
     socket.to(room).emit("pause");
   });
 
+  // TYPING
+  socket.on("typing", (room) => {
+    console.log(`User ${socket.id} is typing in room ${room}`);
+    socket.to(room).emit("typing");
+  });
+
+  socket.on("stop-typing", (room) => {
+    console.log(`User ${socket.id} stopped typing in room ${room}`);
+    socket.to(room).emit("stop-typing");
+  });
+
   // DISCONNECT
   socket.on("disconnect", () => {
     for (let room in rooms) {
