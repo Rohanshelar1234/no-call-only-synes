@@ -66,6 +66,38 @@ function setVideo() {
   socket.emit("set-video", { room, url });
 }
 
+// PLAY VIDEO
+function playVideo() {
+  if (!room) {
+    alert("Join room first");
+    return;
+  }
+  
+  socket.emit("play", room);
+  
+  // Also play local video
+  const video = document.getElementById("video");
+  if (video.contentWindow) {
+    video.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  }
+}
+
+// PAUSE VIDEO
+function pauseVideo() {
+  if (!room) {
+    alert("Join room first");
+    return;
+  }
+  
+  socket.emit("pause", room);
+  
+  // Also pause local video
+  const video = document.getElementById("video");
+  if (video.contentWindow) {
+    video.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  }
+}
+
 // SCREEN SHARE
 async function shareScreen() {
   try {
@@ -125,4 +157,21 @@ socket.on("screen-share-stop", () => {
   div.innerText = "📺 User stopped sharing screen";
   div.style.color = "#ec4899";
   document.getElementById("chat").appendChild(div);
+});
+
+// PLAY/PAUSE EVENTS
+socket.on("play", () => {
+  console.log("Received play command");
+  const video = document.getElementById("video");
+  if (video.contentWindow) {
+    video.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  }
+});
+
+socket.on("pause", () => {
+  console.log("Received pause command");
+  const video = document.getElementById("video");
+  if (video.contentWindow) {
+    video.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  }
 });

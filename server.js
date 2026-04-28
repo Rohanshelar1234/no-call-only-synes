@@ -68,6 +68,17 @@ io.on("connection", (socket) => {
     socket.to(room).emit("screen-share-stop");
   });
 
+  // PLAY/PAUSE
+  socket.on("play", (room) => {
+    console.log(`User ${socket.id} played video in room ${room}`);
+    socket.to(room).emit("play");
+  });
+
+  socket.on("pause", (room) => {
+    console.log(`User ${socket.id} paused video in room ${room}`);
+    socket.to(room).emit("pause");
+  });
+
   // DISCONNECT
   socket.on("disconnect", () => {
     for (let room in rooms) {
