@@ -8,6 +8,9 @@ const io = new Server(server, {
   cors: { origin: "*" }
 });
 
+// Serve static files from frontend directory
+app.use(express.static("frontend"));
+
 let rooms = {};
 
 io.on("connection", (socket) => {
