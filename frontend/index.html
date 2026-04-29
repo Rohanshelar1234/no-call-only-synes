@@ -1,132 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>SceneSync - Real-time Co-watching</title>
-  <style>
-    body {
-      margin: 0;
-      background: #0f0f0f;
-      font-family: Poppins, sans-serif;
-      color: white;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-      text-align: center;
-    }
-
-    h1 {
-      background: linear-gradient(45deg, #a855f7, #ec4899);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .room-box, .video-box, .chat-box {
-      background: #18181b;
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 15px;
-      transition: 0.3s;
-    }
-
-    .room-box:hover, .video-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 20px rgba(168,85,247,0.3);
-    }
-
-    button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(45deg, #a855f7, #ec4899);
-      color: white;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 10px #ec4899;
-    }
-
-    input {
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      margin: 5px;
-      width: 60%;
-      background: #1f1f23;
-      color: white;
-    }
-
-    iframe {
-      width: 100%;
-      height: 400px;
-      border-radius: 15px;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Call Just Sync - Real-time Collaboration</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <!-- Animated Background Orbs -->
+    <div class="bg-orb orb1"></div>
+    <div class="bg-orb orb2"></div>
+    <div class="bg-orb orb3"></div>
 
-<div class="container">
-  <h1>🎬 SceneSync</h1>
-  <p class="subtitle">No call, just sync.</p>
-
-  <!-- Room Control Box -->
-  <div class="room-box">
-    <h2>🎯 Room Control</h2>
-    
-    <button onclick="createRoom()">🏠 Create Room</button>
-    
-    <input id="roomInput" placeholder="Enter Room ID" />
-    <button onclick="joinRoom()">Join</button>
-
-    <p id="roomDisplay">Room: -</p>
-    
-    <button onclick="copyRoom()">📋 Copy Room ID</button>
-    
-    <p id="userCount">Users: 0</p>
-    
-    <div id="status" style="display: none;"></div>
-  </div>
-
-  <!-- Video Box -->
-  <div class="video-box">
-    <h2>🎬 Video Player</h2>
-    
-    <input id="urlInput" placeholder="Paste YouTube URL (e.g., https://youtube.com/watch?v=...)">
-    <button onclick="setVideo()">▶️ Load</button>
-    
-    <button onclick="playVideo()">▶️ Play</button>
-    <button onclick="pauseVideo()">⏸️ Pause</button>
-    <button onclick="shareScreen()">📺 Share Screen</button>
-    
-    <iframe id="video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-  </div>
-
-  <!-- Chat Box -->
-  <div class="chat-box">
-    <h2>💬 Live Chat</h2>
-    
-    <div id="chat"></div>
-    
-    <div id="typingIndicator" style="display: none; color: #a855f7; font-style: italic; margin: 10px 0;">
-      Someone is typing...
+    <!-- Landing Screen -->
+    <div class="landing-screen" id="landingScreen">
+        <div class="glass-panel" style="padding: 3rem; text-align: center;">
+            <div class="logo">🎬 No Call Just Sync</div>
+            <div class="tagline">Real-time collaboration without the call</div>
+            
+            <div class="input-section">
+                <input type="text" class="input-field" id="usernameInput" placeholder="Enter your username" maxlength="20">
+                <button class="btn" onclick="setUsername()">Continue</button>
+            </div>
+            
+            <div class="room-section" id="roomSection" style="display: none; margin-top: 2rem;">
+                <button class="btn" onclick="createRoom()">🏠 Create Room</button>
+                <div style="margin: 1rem 0;">
+                    <input type="text" class="input-field" id="roomInput" placeholder="Enter Room ID" maxlength="6" style="text-transform: uppercase;">
+                    <button class="btn btn-secondary" onclick="joinRoom()">🔗 Join Room</button>
+                </div>
+                <input type="text" class="input-field" id="passwordInput" placeholder="Room password (optional)" style="width: 200px;">
+            </div>
+        </div>
     </div>
-    
-    <input id="msg" placeholder="Type a message..." maxlength="200">
-    <button onclick="sendMsg()">📤 Send</button>
-  </div>
 
-</div>
+    <!-- Room Screen -->
+    <div class="room-screen" id="roomScreen">
+        <!-- Top Bar -->
+        <div class="top-bar glass-panel">
+            <div class="room-info">
+                <div class="room-id" id="roomIdDisplay">Room: -</div>
+                <button class="btn copy-btn" onclick="copyRoomId()">📋 Copy</button>
+            </div>
+            <div class="user-count" id="userCountDisplay">Users: 0</div>
+        </div>
 
-<!-- Scripts at the end -->
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="app.js"></script>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Users Panel -->
+            <div class="users-panel glass-panel">
+                <h3>👥 Users</h3>
+                <div id="usersList"></div>
+            </div>
 
+            <!-- Chat Area -->
+            <div class="chat-area glass-panel">
+                <h3>💬 Chat</h3>
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="typing-indicator" id="typingIndicator"></div>
+                
+                <div class="chat-input-area">
+                    <div class="emoji-bar" id="emojiBar">
+                        <button class="emoji-btn" onclick="addEmoji('😀')">😀</button>
+                        <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
+                        <button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
+                        <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎉')">🎉</button>
+                        <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
+                        <button class="emoji-btn" onclick="addEmoji('💯')">💯</button>
+                        <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
+                        <button class="emoji-btn" onclick="addEmoji('💡')">💡</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎯')">🎯</button>
+                        <button class="emoji-btn" onclick="addEmoji('⭐')">⭐</button>
+                        <button class="emoji-btn" onclick="addEmoji('🌟')">🌟</button>
+                        <button class="emoji-btn" onclick="addEmoji('✨')">✨</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎨')">🎨</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎭')">🎭</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎪')">🎪</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎮')">🎮</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎵')">🎵</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎸')">🎸</button>
+                        <button class="emoji-btn" onclick="addEmoji('🎺')">🎺</button>
+                    </div>
+                    
+                    <div class="input-container">
+                        <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." maxlength="500">
+                        <button class="btn" onclick="sendMessage()">📤 Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notepad Panel -->
+            <div class="notepad-panel glass-panel">
+                <h3>📝 Shared Notepad</h3>
+                <textarea class="notepad" id="notepad" placeholder="Start typing... this syncs with everyone in the room!"></textarea>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar glass-panel">
+            <div class="connection-status">
+                <div class="status-dot"></div>
+                <span id="connectionStatus">Connected</span>
+            </div>
+            <div class="sync-status" id="syncStatus">Synced</div>
+        </div>
+    </div>
+
+    <!-- Socket.IO CDN -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <!-- App Script -->
+    <script src="app.js"></script>
 </body>
 </html>
