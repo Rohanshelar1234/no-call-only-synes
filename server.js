@@ -5,7 +5,12 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: false
+  },
+  transports: ["websocket", "polling"]
 });
 
 // Serve static files from frontend directory

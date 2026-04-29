@@ -1,5 +1,12 @@
 // Socket connection
-const socket = io("http://localhost:3000");
+const BACKEND_URL = "https://scenesync-backend.onrender.com";
+
+const socket = io(BACKEND_URL, {
+  transports: ["websocket", "polling"],
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000
+});
 
 // Global state
 let username = "";
@@ -227,13 +234,17 @@ function updateSyncStatus(status) {
 
 // Socket event handlers
 socket.on("connect", () => {
-  console.log("Connected to server");
-  document.getElementById("connectionStatus").textContent = "Connected";
+  console.log("✅ Connected to server!");
+  document.getElementById("connectionStatus").textContent = "🟢 Connected";
+});
+
+socket.on("connect_error", (err) => {
+  console.log("❌ Connection failed:", err.message);
+  document.getElementById("connectionStatus").textContent = "🔴 Connection Failed - " + err.message;
 });
 
 socket.on("disconnect", () => {
-  console.log("Disconnected from server");
-  document.getElementById("connectionStatus").textContent = "Disconnected";
+  document.getElementById("connectionStatus").textContent = "🟡 Reconnecting...";
 });
 
 socket.on("join-success", (data) => {
