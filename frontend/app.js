@@ -9,6 +9,11 @@ socket.on("join-success", (roomId) => {
   alert("✅ Joined Room: " + roomId);
 });
 
+// user count updates
+socket.on("user-count", (count) => {
+  document.getElementById("userCount").innerText = "Users: " + count;
+});
+
 // ✅ IMPORTANT: normal function (NOT arrow)
 function joinRoom() {
   console.log("Join clicked");

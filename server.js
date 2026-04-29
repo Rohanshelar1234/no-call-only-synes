@@ -8,15 +8,39 @@ const io = new Server(server, {
   cors: { origin: "*" }
 });
 
+let rooms = {};
+
 io.on("connection", (socket) => {
 
   socket.on("join-room", (roomId) => {
-    console.log("User joined:", roomId);
-
     socket.join(roomId);
-
-    // ✅ send success to frontend
+    
+    // Track room users
+    if (!rooms[roomId]) {
+      rooms[roomId] = 0;
+    }
+    rooms[roomId]++;
+    
+    console.log("User joined room:", roomId, "Total users:", rooms[roomId]);
+    
+    // Send success back to user
     socket.emit("join-success", roomId);
+    
+    // Send user count to all users in room
+    io.to(roomId).emit("user-count", rooms[roomId]);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+    
+    // Decrement user count for all rooms
+    for (let roomId in rooms) {
+      if (rooms[roomId] > 0) {
+        rooms[roomId]--;
+        console.log("Room", roomId, "now has", rooms[roomId], "users");
+        io.to(roomId).emit("user-count", rooms[roomId]);
+      }
+    }
   });
 
 });
